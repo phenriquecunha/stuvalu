@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 @RestController()
 @RequestMapping("/user")
@@ -29,11 +30,11 @@ public class UserController {
 
     @PostMapping("/create")
     public ResponseEntity<Object> createUser(@RequestBody @Valid UserDto user){
-        var existsUser = userService.getUserByEmail(user.getEmail());
+        Optional<UserModel> existsUser = userService.getUserByEmail(user.getEmail());
         if(existsUser.isPresent()){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuário já cadastrado");
         }else{
-            var userModel = new UserModel();
+            UserModel userModel = new UserModel();
             user.setPassword(encoder.encode(user.getPassword()));
             BeanUtils.copyProperties(user, userModel);
             return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userModel));
@@ -43,7 +44,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody String email, @RequestBody String password){
-        var user = userService.getUserByEmail(email);
+        Optional<UserModel> user = userService.getUserByEmail(email);
         if(user.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email não cadastrado");
         }
