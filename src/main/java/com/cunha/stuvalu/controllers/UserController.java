@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @RestController()
@@ -37,6 +38,7 @@ public class UserController {
             UserModel userModel = new UserModel();
             user.setPassword(encoder.encode(user.getPassword()));
             BeanUtils.copyProperties(user, userModel);
+            userModel.setCreatedAt(LocalDateTime.now());
             return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userModel));
         }
 

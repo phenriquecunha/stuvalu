@@ -3,8 +3,8 @@ package com.cunha.stuvalu.models;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Entity(name = "users")
@@ -26,5 +26,9 @@ public class UserModel {
     private int stars;
     @Column
     private ArrayList<UUID> posts;
+    @Column
+    private LocalDateTime createdAt;
+    @Column
+    private LocalDateTime updatedAt;
 
 }
