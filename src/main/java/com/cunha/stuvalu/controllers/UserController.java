@@ -11,8 +11,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController()
 @RequestMapping("/user")
@@ -30,10 +32,11 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Object> createUser(@RequestBody @Valid UserDto user){
+    public ResponseEntity<Object> createUser(@RequestBody @NotNull @Valid UserDto user){
         Optional<UserModel> existsUser = userService.getUserByEmail(user.getEmail());
+
         if(existsUser.isPresent()){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuário já cadastrado");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User already registered!");
         }else{
             UserModel userModel = new UserModel();
             user.setPassword(encoder.encode(user.getPassword()));
@@ -41,22 +44,27 @@ public class UserController {
             userModel.setCreatedAt(LocalDateTime.now());
             return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userModel));
         }
-
     }
 
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody String email, @RequestBody String password){
         Optional<UserModel> user = userService.getUserByEmail(email);
         if(user.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email não cadastrado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email not registered!");
         }
 
         boolean passwordMatch = encoder.matches(password, user.get().getPassword());
 
         if(passwordMatch){
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Usuário logado com sucesso!");
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("User authenticated");
         }else{
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Senha incorreta!");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Incorrect password");
         }
+    }
+
+    @PostMapping("/user")
+    public ResponseEntity<Object> getUser(@RequestBody UUID id){
+      //TODO
+      return null;
     }
 }

@@ -17,6 +17,8 @@ public class UserModel {
     private UUID id;
 
     @Column(nullable = false)
+    private String nickname;
+    @Column(nullable = false)
     private String name;
     @Column(nullable = false, unique = true)
     private String email;
